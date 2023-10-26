@@ -4,9 +4,23 @@ interface User {
   email: string;
 }
 
-export const UserTable = async () => {
+interface Props {
+  sortOrder: string;
+}
+
+export const UserTable = async ({ sortOrder }: Props) => {
   const res = await fetch('https://jsonplaceholder.typicode.com/users');
   const users: User[] = await res.json();
+
+  const sortedUsers = sortOrder === "name" ? sortByName() : sortByEmail();
+
+  function sortByName() {
+    return users.sort((a, b) => a.name > b.name ? 1 : -1 );
+  }
+
+  function sortByEmail() {
+    return users.sort((a, b) => a.email > b.email ? 1 : -1 );
+  }
 
   return (
     <table className="table table-zebra">
@@ -17,7 +31,7 @@ export const UserTable = async () => {
         </tr>
       </thead>
       <tbody>
-        {users.map(user => <tr key={user.id}>
+        {sortedUsers.map(user => <tr key={user.id}>
           <td>{user.name}</td>
           <td>{user.email}</td>
         </tr>)}
